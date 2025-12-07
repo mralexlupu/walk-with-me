@@ -1,0 +1,55 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(2400, 80)
+
+[sub_resource type="Gradient" id="2"]
+colors = PackedColorArray(0.19, 0.28, 0.33, 1, 0.11, 0.16, 0.2, 1)
+
+[sub_resource type="GradientTexture2D" id="3"]
+gradient = SubResource("2")
+width = 2400
+height = 80
+fill_from = Vector2(0, 0)
+fill_to = Vector2(0, 80)
+
+[node name="Main" type="Node2D"]
+y_sort_enabled = true
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="Sky" type="ColorRect" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2000.0
+offset_top = -600.0
+offset_right = 2000.0
+offset_bottom = 800.0
+color = Color(0.12, 0.15, 0.2, 1)
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Ground" type="StaticBody2D" parent="World"]
+position = Vector2(0, 360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Ground"]
+position = Vector2(0, 20)
+shape = SubResource("1")
+
+[node name="GroundSprite" type="Sprite2D" parent="World/Ground"]
+position = Vector2(0, 20)
+texture = SubResource("3")
+centered = true
+
+[node name="Player" parent="World" instance=ExtResource("1")]
+position = Vector2(-400, 260)
+
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+position = Vector2(0, -20)
+current = true
+zoom = Vector2(0.75, 0.75)
+smoothing_enabled = true
+smoothing_speed = 5.0
