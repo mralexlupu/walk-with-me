@@ -1,22 +1,27 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/coin.tscn" id="3"]
+[ext_resource type="Script" path="res://scripts/level_builder.gd" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/checkpoint.tscn" id="5"]
+[ext_resource type="Texture2D" path="res://assets/bg_far.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/bg_mid.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/spikes.png" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="9"]
+[ext_resource type="AudioStream" path="res://assets/bgm_loop.wav" id="10"]
+[ext_resource type="AudioStream" path="res://assets/sfx_hazard.wav" id="11"]
+[ext_resource type="AudioStream" path="res://assets/sfx_coin.wav" id="12"]
+[ext_resource type="AudioStream" path="res://assets/sfx_checkpoint.wav" id="13"]
+[ext_resource type="Texture2D" path="res://assets/title_card.png" id="14"]
+[ext_resource type="Script" path="res://scripts/follow_camera.gd" id="15"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(2400, 80)
-
-[sub_resource type="Gradient" id="2"]
-colors = PackedColorArray(0.19, 0.28, 0.33, 1, 0.11, 0.16, 0.2, 1)
-
-[sub_resource type="GradientTexture2D" id="3"]
-gradient = SubResource("2")
-width = 2400
-height = 80
-fill_from = Vector2(0, 0)
-fill_to = Vector2(0, 80)
+size = Vector2(64, 32)
 
 [node name="Main" type="Node2D"]
 y_sort_enabled = true
+script = ExtResource("2")
 
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -10
@@ -30,26 +35,217 @@ offset_right = 2000.0
 offset_bottom = 800.0
 color = Color(0.12, 0.15, 0.2, 1)
 
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="Far" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.15, 0.15)
+
+[node name="FarHills" type="Sprite2D" parent="ParallaxBackground/Far"]
+position = Vector2(0, 120)
+texture = ExtResource("6")
+centered = true
+
+[node name="Mid" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.3, 0.3)
+
+[node name="MidHills" type="Sprite2D" parent="ParallaxBackground/Mid"]
+position = Vector2(0, 220)
+texture = ExtResource("7")
+centered = true
+
+[node name="SFX" type="Node" parent="."]
+
+[node name="BGM" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("10")
+volume_db = -12.0
+autoplay = true
+pitch_scale = 0.8
+
+[node name="Hazard" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("11")
+volume_db = -6.0
+
+[node name="Coin" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("12")
+volume_db = -8.0
+
+[node name="Checkpoint" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("13")
+volume_db = -10.0
 [node name="World" type="Node2D" parent="."]
 
-[node name="Ground" type="StaticBody2D" parent="World"]
-position = Vector2(0, 360)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Ground"]
-position = Vector2(0, 20)
-shape = SubResource("1")
-
-[node name="GroundSprite" type="Sprite2D" parent="World/Ground"]
-position = Vector2(0, 20)
-texture = SubResource("3")
-centered = true
+[node name="TileMap" type="TileMap" parent="World"]
+position = Vector2(0, 64)
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("4")
 
 [node name="Player" parent="World" instance=ExtResource("1")]
 position = Vector2(-400, 260)
 
-[node name="Camera2D" type="Camera2D" parent="World/Player"]
+[node name="Spikes" type="Area2D" parent="World"]
+position = Vector2(360, 360)
+collision_layer = 1
+collision_mask = 1
+groups = ["hazard"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Spikes"]
+position = Vector2(0, 20)
+shape = SubResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Spikes"]
+texture = ExtResource("8")
+centered = true
+
+[node name="Coin1" parent="World" instance=ExtResource("3")]
+position = Vector2(120, 140)
+
+[node name="Coin2" parent="World" instance=ExtResource("3")]
+position = Vector2(520, 60)
+
+[node name="Coin3" parent="World" instance=ExtResource("3")]
+position = Vector2(-120, -20)
+
+[node name="Coin4" parent="World" instance=ExtResource("3")]
+position = Vector2(280, 120)
+
+[node name="Coin5" parent="World" instance=ExtResource("3")]
+position = Vector2(660, 40)
+
+[node name="Coin6" parent="World" instance=ExtResource("3")]
+position = Vector2(740, -20)
+
+[node name="Checkpoint1" parent="World" instance=ExtResource("5")]
+position = Vector2(-320, 200)
+
+[node name="Checkpoint2" parent="World" instance=ExtResource("5")]
+position = Vector2(520, 120)
+
+[node name="MovingPlatform1" parent="World" instance=ExtResource("9")]
+position = Vector2(220, 220)
+end_offset = Vector2(0, -140)
+speed = 90.0
+
+[node name="MovingPlatform2" parent="World" instance=ExtResource("9")]
+position = Vector2(660, 180)
+start_offset = Vector2(0, -100)
+end_offset = Vector2(0, 80)
+speed = 70.0
+
+[node name="Camera2D" type="Camera2D" parent="World"]
 position = Vector2(0, -20)
 current = true
 zoom = Vector2(0.75, 0.75)
-smoothing_enabled = true
-smoothing_speed = 5.0
+script = ExtResource("15")
+target_path = NodePath("../Player")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="FadeRect" type="ColorRect" parent="UI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+
+[node name="TitleCard" type="TextureRect" parent="UI"]
+anchor_left = 0.25
+anchor_top = 0.2
+anchor_right = 0.75
+anchor_bottom = 0.6
+texture = ExtResource("14")
+stretch_mode = 1
+modulate = Color(1, 1, 1, 1)
+
+[node name="TitleLabel" type="Label" parent="UI/TitleCard"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 40.0
+offset_bottom = -80.0
+text = "Walk With Me"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 36
+
+[node name="SubtitleLabel" type="Label" parent="UI/TitleCard"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 110.0
+offset_bottom = -40.0
+text = "A small journey under open skies"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+
+[node name="CoinLabel" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 220.0
+offset_bottom = 50.0
+text = "Coins: 0 / 0"
+theme_override_font_sizes/font_size = 18
+
+[node name="MessageLabel" type="Label" parent="UI"]
+anchor_left = 0.3
+anchor_top = 0.1
+anchor_right = 0.7
+anchor_bottom = 0.18
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+modulate = Color(1, 1, 1, 0)
+
+[node name="VolumeLabel" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 180.0
+offset_bottom = 84.0
+text = "Volume"
+theme_override_font_sizes/font_size = 14
+
+[node name="VolumeSlider" type="HSlider" parent="UI"]
+offset_left = 20.0
+offset_top = 86.0
+offset_right = 220.0
+offset_bottom = 110.0
+min_value = -30.0
+max_value = 0.0
+step = 0.5
+value = -12.0
+
+[node name="EndingPanel" type="TextureRect" parent="UI"]
+anchor_left = 0.25
+anchor_top = 0.2
+anchor_right = 0.75
+anchor_bottom = 0.6
+texture = ExtResource("14")
+stretch_mode = 1
+modulate = Color(1, 1, 1, 0)
+visible = false
+
+[node name="EndingLabel" type="Label" parent="UI/EndingPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_bottom = -60.0
+text = "Journey Complete"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 32
+
+[node name="EndingSubLabel" type="Label" parent="UI/EndingPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 130.0
+offset_bottom = -20.0
+text = "All coins gathered. Take a breath."
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
