@@ -1,20 +1,20 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=17 format=3 uid="uid://b364grim23ttu"]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
-[ext_resource type="Script" path="res://scripts/main.gd" id="2"]
+[ext_resource type="Script" uid="uid://dhsn6eldkbqi2" path="res://scripts/main.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/coin.tscn" id="3"]
-[ext_resource type="Script" path="res://scripts/level_builder.gd" id="4"]
+[ext_resource type="Script" uid="uid://cy7seysiaxmog" path="res://scripts/level_builder.gd" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/checkpoint.tscn" id="5"]
-[ext_resource type="Texture2D" path="res://assets/bg_far.png" id="6"]
-[ext_resource type="Texture2D" path="res://assets/bg_mid.png" id="7"]
-[ext_resource type="Texture2D" path="res://assets/spikes.png" id="8"]
+[ext_resource type="Texture2D" uid="uid://dybknx1caflpv" path="res://assets/bg_far.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://cmdfxlk1j4vi0" path="res://assets/bg_mid.png" id="7"]
+[ext_resource type="Texture2D" uid="uid://btygv4opmqu7x" path="res://assets/spikes.png" id="8"]
 [ext_resource type="PackedScene" path="res://scenes/moving_platform.tscn" id="9"]
-[ext_resource type="AudioStream" path="res://assets/bgm_loop.wav" id="10"]
-[ext_resource type="AudioStream" path="res://assets/sfx_hazard.wav" id="11"]
-[ext_resource type="AudioStream" path="res://assets/sfx_coin.wav" id="12"]
-[ext_resource type="AudioStream" path="res://assets/sfx_checkpoint.wav" id="13"]
-[ext_resource type="Texture2D" path="res://assets/title_card.png" id="14"]
-[ext_resource type="Script" path="res://scripts/follow_camera.gd" id="15"]
+[ext_resource type="AudioStream" uid="uid://ctpkqievy3uvu" path="res://assets/bgm_loop.wav" id="10"]
+[ext_resource type="AudioStream" uid="uid://b4f5bfbaww8f1" path="res://assets/sfx_hazard.wav" id="11"]
+[ext_resource type="AudioStream" uid="uid://bcu3aj08kq5t6" path="res://assets/sfx_coin.wav" id="12"]
+[ext_resource type="AudioStream" uid="uid://cwcerlk0ni4sp" path="res://assets/sfx_checkpoint.wav" id="13"]
+[ext_resource type="Texture2D" uid="uid://ctmb0qfjluu6w" path="res://assets/title_card.png" id="14"]
+[ext_resource type="Script" uid="uid://c1t8yb655rucg" path="res://scripts/follow_camera.gd" id="15"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(64, 32)
@@ -27,6 +27,7 @@ script = ExtResource("2")
 layer = -10
 
 [node name="Sky" type="ColorRect" parent="Background"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -2000.0
@@ -34,6 +35,9 @@ offset_top = -600.0
 offset_right = 2000.0
 offset_bottom = 800.0
 color = Color(0.12, 0.15, 0.2, 1)
+
+[node name="Window" type="Window" parent="Background"]
+oversampling_override = 1.0
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
@@ -43,7 +47,6 @@ motion_scale = Vector2(0.15, 0.15)
 [node name="FarHills" type="Sprite2D" parent="ParallaxBackground/Far"]
 position = Vector2(0, 120)
 texture = ExtResource("6")
-centered = true
 
 [node name="Mid" type="ParallaxLayer" parent="ParallaxBackground"]
 motion_scale = Vector2(0.3, 0.3)
@@ -51,15 +54,14 @@ motion_scale = Vector2(0.3, 0.3)
 [node name="MidHills" type="Sprite2D" parent="ParallaxBackground/Mid"]
 position = Vector2(0, 220)
 texture = ExtResource("7")
-centered = true
 
 [node name="SFX" type="Node" parent="."]
 
 [node name="BGM" type="AudioStreamPlayer" parent="SFX"]
 stream = ExtResource("10")
 volume_db = -12.0
-autoplay = true
 pitch_scale = 0.8
+autoplay = true
 
 [node name="Hazard" type="AudioStreamPlayer" parent="SFX"]
 stream = ExtResource("11")
@@ -72,22 +74,19 @@ volume_db = -8.0
 [node name="Checkpoint" type="AudioStreamPlayer" parent="SFX"]
 stream = ExtResource("13")
 volume_db = -10.0
+
 [node name="World" type="Node2D" parent="."]
 
 [node name="TileMap" type="TileMap" parent="World"]
 position = Vector2(0, 64)
-collision_layer = 1
-collision_mask = 1
+format = 2
 script = ExtResource("4")
 
 [node name="Player" parent="World" instance=ExtResource("1")]
-position = Vector2(-400, 260)
+position = Vector2(80, 200)
 
 [node name="Spikes" type="Area2D" parent="World"]
 position = Vector2(360, 360)
-collision_layer = 1
-collision_mask = 1
-groups = ["hazard"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Spikes"]
 position = Vector2(0, 20)
@@ -95,7 +94,6 @@ shape = SubResource("1")
 
 [node name="Sprite2D" type="Sprite2D" parent="World/Spikes"]
 texture = ExtResource("8")
-centered = true
 
 [node name="Coin1" parent="World" instance=ExtResource("3")]
 position = Vector2(120, 140)
@@ -130,11 +128,9 @@ speed = 90.0
 position = Vector2(660, 180)
 start_offset = Vector2(0, -100)
 end_offset = Vector2(0, 80)
-speed = 70.0
 
 [node name="Camera2D" type="Camera2D" parent="World"]
 position = Vector2(0, -20)
-current = true
 zoom = Vector2(0.75, 0.75)
 script = ExtResource("15")
 target_path = NodePath("../Player")
@@ -143,68 +139,67 @@ target_path = NodePath("../Player")
 layer = 20
 
 [node name="FadeRect" type="ColorRect" parent="UI"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0)
 
 [node name="TitleCard" type="TextureRect" parent="UI"]
+anchors_preset = -1
 anchor_left = 0.25
 anchor_top = 0.2
 anchor_right = 0.75
 anchor_bottom = 0.6
 texture = ExtResource("14")
 stretch_mode = 1
-modulate = Color(1, 1, 1, 1)
 
 [node name="TitleLabel" type="Label" parent="UI/TitleCard"]
-anchor_left = 0.0
-anchor_top = 0.0
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 40.0
 offset_bottom = -80.0
+theme_override_font_sizes/font_size = 36
 text = "Walk With Me"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 36
 
 [node name="SubtitleLabel" type="Label" parent="UI/TitleCard"]
-anchor_left = 0.0
-anchor_top = 0.0
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 110.0
 offset_bottom = -40.0
+theme_override_font_sizes/font_size = 18
 text = "A small journey under open skies"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 18
 
 [node name="CoinLabel" type="Label" parent="UI"]
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 220.0
 offset_bottom = 50.0
-text = "Coins: 0 / 0"
 theme_override_font_sizes/font_size = 18
+text = "Coins: 0 / 0"
 
 [node name="MessageLabel" type="Label" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = -1
 anchor_left = 0.3
 anchor_top = 0.1
 anchor_right = 0.7
 anchor_bottom = 0.18
-text = ""
-horizontal_alignment = 1
 theme_override_font_sizes/font_size = 16
-modulate = Color(1, 1, 1, 0)
+horizontal_alignment = 1
 
 [node name="VolumeLabel" type="Label" parent="UI"]
 offset_left = 20.0
 offset_top = 60.0
 offset_right = 180.0
 offset_bottom = 84.0
-text = "Volume"
 theme_override_font_sizes/font_size = 14
+text = "Volume"
 
 [node name="VolumeSlider" type="HSlider" parent="UI"]
 offset_left = 20.0
@@ -217,35 +212,34 @@ step = 0.5
 value = -12.0
 
 [node name="EndingPanel" type="TextureRect" parent="UI"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+anchors_preset = -1
 anchor_left = 0.25
 anchor_top = 0.2
 anchor_right = 0.75
 anchor_bottom = 0.6
 texture = ExtResource("14")
 stretch_mode = 1
-modulate = Color(1, 1, 1, 0)
-visible = false
 
 [node name="EndingLabel" type="Label" parent="UI/EndingPanel"]
-anchor_left = 0.0
-anchor_top = 0.0
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 80.0
 offset_bottom = -60.0
+theme_override_font_sizes/font_size = 32
 text = "Journey Complete"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 32
 
 [node name="EndingSubLabel" type="Label" parent="UI/EndingPanel"]
-anchor_left = 0.0
-anchor_top = 0.0
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 130.0
 offset_bottom = -20.0
+theme_override_font_sizes/font_size = 18
 text = "All coins gathered. Take a breath."
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 18

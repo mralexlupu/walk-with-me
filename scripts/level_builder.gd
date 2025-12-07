@@ -20,19 +20,16 @@ func _build_tile_set() -> TileSet:
 
 func _build_level() -> void:
 	_clear_existing()
-	# Main ground strip with breaks for pits
-	_add_platform(-40, -10, ground_y)
-	_add_platform(-6, 24, ground_y)
-	_add_platform(30, 80, ground_y)
+	# Main ground strip with small pits
+	_add_platform(-5, 35, ground_y)
+	_add_platform(40, 110, ground_y)
 	# Elevated and staggered platforms
-	_add_platform(-20, -12, ground_y - 3)
-	_add_platform(6, 12, ground_y - 3)
-	_add_platform(18, 22, ground_y - 5)
-	_add_platform(36, 42, ground_y - 2)
-	_add_platform(48, 52, ground_y - 4)
-	_add_platform(60, 66, ground_y - 6)
-	_add_platform(72, 76, ground_y - 3)
-	_add_platform(-32, -26, ground_y - 6)
+	_add_platform(8, 14, ground_y - 3)
+	_add_platform(20, 26, ground_y - 5)
+	_add_platform(48, 54, ground_y - 2)
+	_add_platform(62, 66, ground_y - 4)
+	_add_platform(76, 82, ground_y - 6)
+	_add_platform(94, 100, ground_y - 3)
 
 func _clear_existing() -> void:
 	clear()
@@ -48,6 +45,8 @@ func _add_platform(x_start: int, x_end: int, y: int) -> void:
 func _create_collider(x_start: int, x_end: int, y: int) -> void:
 	var body := StaticBody2D.new()
 	body.set_meta("generated_platform", true)
+	body.collision_layer = 1
+	body.collision_mask = 1
 
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
@@ -55,8 +54,8 @@ func _create_collider(x_start: int, x_end: int, y: int) -> void:
 	rect.extents = Vector2(width * 0.5, tile_size * 0.5)
 	shape.shape = rect
 
-	var world_pos := map_to_local(Vector2i(x_start, y)) + Vector2(width * 0.5, tile_size * 0.5)
-	body.position = world_pos
+	var local_pos := map_to_local(Vector2i(x_start, y)) + Vector2(width * 0.5, tile_size * 0.5)
+	body.global_position = to_global(local_pos)
 	body.add_child(shape)
 
 	get_parent().add_child(body)
